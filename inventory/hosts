@@ -1,0 +1,10 @@
+hypervisors:
+  hosts:
+    10.87.64.31:
+      bridge: br1
+      #port_group: prov
+      container_vms:
+        192.168.1.100:
+        192.168.1.101:
+overcloud_vms:        
+

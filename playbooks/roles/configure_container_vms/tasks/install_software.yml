@@ -1,0 +1,16 @@
+---
+- name: install docker
+  yum:
+    name: docker
+    state: latest
+
+- name: set docker registry
+  copy:
+    content: "{\n  \"insecure-registries\": [\"{{ CONTAINER_REGISTRY }}\"]\n}"
+  when: CONTAINER_REGISTRY is defined
+
+- name: start docker daemon
+  service:
+    enabled: yes
+    name: docker
+    state: started

@@ -1,0 +1,115 @@
+---
+- name: register uncompressed image
+  find:
+    paths: /tmp/centos_image/
+    patterns: '*'
+    file_type: file
+  register: uncompressed_image_file
+
+- name: set uncompressed image name
+  set_fact:
+     uncompressed_image_name: "{{ uncompressed_image_file.files[0].path.split('/')[3] }}"
+
+- name: set hostname
+  set_fact:
+    container_vm_hostname: "{{ item.key.replace('.','_') }}"
+
+- name: get container vm status
+  virt:
+    name: "{{ container_vm_hostname }}"
+    command: status
+  register: container_vm_status
+  ignore_errors: yes
+
+- debug:
+    msg: "{{ container_vm_status }}"
+
+- name: destroy {{ container_vm_hostname }}
+  virt:
+    name: "{{ container_vm_hostname }}"
+    command: destroy  
+  when: container_vm_status.status is defined and container_vm_status.status == "running"
+
+- name: get container vm status
+  virt:
+    name: "{{ container_vm_hostname }}"
+    command: status
+  register: container_vm_status
+  ignore_errors: yes
+
+- debug:
+    msg: "{{ container_vm_status }}"
+
+- name: undefine {{ container_vm_hostname }}
+  virt:
+    name: "{{ container_vm_hostname }}"
+    command: undefine  
+  when: container_vm_status.status is defined and container_vm_status.status == "shutdown"
+
+- name: Create /var/lib/libvirt/images/{{ container_vm_hostname }}.qcow image
+  command: /usr/bin/qemu-img create -f qcow2 /var/lib/libvirt/images/{{ container_vm_hostname }}.qcow2 {{ CONTAINER_VM_CONFIG.vdisk }}
+
+- name: Expand {{ container_vm_hostname }} container image size
+  shell: /usr/bin/virt-resize --expand /dev/sda1 /tmp/centos_image/{{ uncompressed_image_name }} /var/lib/libvirt/images/{{ container_vm_hostname }}.qcow2
+  environment:
+    LIBGUESTFS_BACKEND: direct
+
+- name: create ifcfg file
+  copy:
+    content: "DEVICE=eth0\nIPADDR={{ item.key }}\nNETMASK={{ CONTAINER_VM_CONFIG.network.subnet_netmask }}\nGATEWAY={{ CONTAINER_VM_CONFIG.network.gatway }}\nDNS1={{ CONTAINER_VM_CONFIG.network.nameserver }}\nONBOOT=yes"
+    dest: "/tmp/ifcfg_{{ container_vm_hostname }}"
+
+- name: Virt customize container image
+  shell: | 
+    /usr/bin/virt-customize  -a /var/lib/libvirt/images/{{ container_vm_hostname }}.qcow2 \
+    --run-command 'xfs_growfs /' \
+    --root-password password:{{ CONTAINER_VM_ROOT_PWD }} \
+    --hostname {{ container_vm_hostname }}.local \
+    --run-command 'sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd_config' \
+    --run-command 'sed -i "s/#UseDNS yes/UseDNS no/g" /etc/ssh/sshd_config' \
+    --run-command 'systemctl enable sshd' \
+    --run-command 'yum remove -y cloud-init' \
+    --upload /tmp/ifcfg_{{ container_vm_hostname }}:/etc/sysconfig/network-scripts/ifcfg-eth0 \
+    --ssh-inject root:file:{{ ROOT_SSH_KEY }} \
+    --selinux-relabel
+  environment:
+    LIBGUESTFS_BACKEND: direct
+
+- name: Install container vm {{ container_vm_hostname }} with portgroup {{ hostvars[inventory_hostname].port_group }}
+  command: |
+    virt-install --name {{ container_vm_hostname }} \
+    --disk /var/lib/libvirt/images/{{ container_vm_hostname }}.qcow2
+    --vcpus={{ CONTAINER_VM_CONFIG.vcpu }} \
+    --ram={{ CONTAINER_VM_CONFIG.vram }} \
+    --network network={{ hostvars[inventory_hostname].bridge }},model=virtio,portgroup={{ hostvars[inventory_hostname].port_group }} \
+    --virt-type kvm \
+    --cpu host \
+    --import \
+    --os-variant rhel7 \
+    --graphics vnc \
+    --serial pty \
+    --noautoconsole \
+    --console pty,target_type=virtio
+  when: hostvars[inventory_hostname].port_group is defined
+
+- name: Install container vm {{ container_vm_hostname }} without portgroup
+  command: |
+    virt-install --name {{ container_vm_hostname }} \
+    --disk /var/lib/libvirt/images/{{ container_vm_hostname }}.qcow2
+    --vcpus={{ CONTAINER_VM_CONFIG.vcpu }} \
+    --ram={{ CONTAINER_VM_CONFIG.vram }} \
+    --network network={{ hostvars[inventory_hostname].bridge }},model=virtio \
+    --virt-type kvm \
+    --cpu host \
+    --import \
+    --os-variant rhel7 \
+    --graphics vnc \
+    --serial pty \
+    --noautoconsole \
+    --console pty,target_type=virtio
+  when: hostvars[inventory_hostname].port_group is undefined
+
+- name: add container vm {{ container_vm_hostname }} to inventory
+  add_host:
+    name: "{{ item.key }}"
+    groups: container_vms
