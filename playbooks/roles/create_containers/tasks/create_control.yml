@@ -1,0 +1,41 @@
+---
+- name: start contrail control
+  docker_service:
+    project_name: contrail-control
+    pull: yes
+    definition:
+      version: '2'
+      services:
+        network:
+          image: docker.io/kubernetes/pause
+          network_mode: "host"
+          volumes:
+           - /etc/hosts:/etc/hosts
+        control:
+          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-control-control:{{ CONTRAIL_VERSION }}"
+          network_mode: "service:network"
+          env_file: /tmp/common.env
+          volumes:
+            - /var/log/contrail
+          depends_on:
+            - network
+          restart: on-failure
+        named:
+          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-control-named:{{ CONTRAIL_VERSION }}"
+          network_mode: "service:network"
+          env_file: /tmp/common.env
+          volumes:
+            - /var/log/contrail
+          depends_on:
+            - network
+          restart: on-failure
+        dns:
+          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-control-dns:{{ CONTRAIL_VERSION }}"
+          network_mode: "service:network"
+          env_file: /tmp/common.env
+          privileged: true
+          volumes:
+            - /var/log/contrail
+          depends_on:
+            - network
+          restart: on-failure

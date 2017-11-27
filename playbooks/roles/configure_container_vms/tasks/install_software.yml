@@ -39,3 +39,9 @@
 - name: "Build hosts file"
   lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ item }} {{ item.replace('.','_') }}" state=present
   with_items: "{{ hostvars[inventory_hostname].groups.container_vms }}"
+
+- name: create log file directory
+  file:
+   dest: /var/log/docker/contrail
+   state: directory
+   mode: 0777

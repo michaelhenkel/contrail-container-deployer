@@ -1,0 +1,67 @@
+---
+- name: start contrail analytics
+  docker_service:
+    project_name: contrail-analytics
+    pull: yes
+    definition:
+      version: '2'
+      services:
+        network:
+          image: docker.io/kubernetes/pause
+          network_mode: "host"
+          volumes:
+           - /etc/hosts:/etc/hosts
+        api:
+          image: "{{ CONTAINER_REGISTRY }}/contrail-analytics-api:{{ CONTRAIL_VERSION }}"
+          network_mode: "service:network"
+          env_file: /tmp/common.env
+          volumes:
+            - /var/log/contrail
+          depends_on:
+            - network
+          restart: on-failure
+        collector:
+          image: "{{ CONTAINER_REGISTRY }}/contrail-analytics-collector:{{ CONTRAIL_VERSION }}"
+          network_mode: "service:network"
+          env_file: /tmp/common.env
+          volumes:
+            - /var/log/contrail
+          depends_on:
+            - network
+          restart: on-failure
+        query-engine:
+          image: "{{ CONTAINER_REGISTRY }}/contrail-analytics-query-engine:{{ CONTRAIL_VERSION }}"
+          network_mode: "service:network"
+          env_file: /tmp/common.env
+          volumes:
+            - /var/log/contrail
+          depends_on:
+            - network
+          restart: on-failure
+        alarm-gen:
+          image: "{{ CONTAINER_REGISTRY }}/contrail-analytics-alarm-gen:{{ CONTRAIL_VERSION }}"
+          network_mode: "service:network"
+          env_file: /tmp/common.env
+          volumes:
+            - /var/log/contrail
+          depends_on:
+            - network
+          restart: on-failure
+        snmp-collector:
+          image: "{{ CONTAINER_REGISTRY }}/contrail-analytics-snmp-collector:{{ CONTRAIL_VERSION }}"
+          network_mode: "service:network"
+          env_file: /tmp/common.env
+          volumes:
+            - /var/log/contrail
+          depends_on:
+            - network
+          restart: on-failure
+        topology:
+          image: "{{ CONTAINER_REGISTRY }}/contrail-analytics-topology:{{ CONTRAIL_VERSION }}"
+          network_mode: "service:network"
+          env_file: /tmp/common.env
+          volumes:
+            - /var/log/contrail
+          depends_on:
+            - network
+          restart: on-failure

@@ -1,13 +1,13 @@
 ---
-- hosts:
-  - hypervisors
-  roles:
-  - image_builder
-
-- hosts:
-  - container_vms
-  roles:
-  - configure_container_vms
+#- hosts:
+#  - hypervisors
+#  roles:
+#  - image_builder
+#
+#- hosts:
+#  - container_vms
+#  roles:
+#  - configure_container_vms
 
 - hosts:
   - container_vms
@@ -17,4 +17,4 @@
 #- hosts:
 #  - container_vms
 #  roles:
-#  - test
+##  - test
