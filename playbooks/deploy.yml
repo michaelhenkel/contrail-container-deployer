@@ -8,3 +8,13 @@
   - container_vms
   roles:
   - configure_container_vms
+
+- hosts:
+  - container_vms
+  roles:
+  - create_containers
+
+#- hosts:
+#  - container_vms
+#  roles:
+#  - test

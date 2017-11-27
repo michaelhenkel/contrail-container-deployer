@@ -1,4 +1,14 @@
 ---
+- name: install epel
+  yum:
+    name: epel-release
+    state: latest
+
+- name: install pip
+  yum:
+    name: python-pip
+    state: latest
+
 - name: install docker
   yum:
     name: docker
@@ -7,6 +17,7 @@
 - name: set docker registry
   copy:
     content: "{\n  \"insecure-registries\": [\"{{ CONTAINER_REGISTRY }}\"]\n}"
+    dest: /etc/docker/daemon.json
   when: CONTAINER_REGISTRY is defined
 
 - name: start docker daemon
@@ -14,3 +25,17 @@
     enabled: yes
     name: docker
     state: started
+
+- name: get docker compose
+  get_url:
+    url: https://github.com/docker/compose/releases/download/1.17.0/docker-compose-Linux-x86_64
+    dest: /usr/local/bin/docker-compose
+    mode: 0777
+
+- name: install python compose
+  pip:
+    name: docker-compose==1.9.0
+
+- name: "Build hosts file"
+  lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ item }} {{ item.replace('.','_') }}" state=present
+  with_items: "{{ hostvars[inventory_hostname].groups.container_vms }}"

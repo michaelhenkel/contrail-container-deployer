@@ -1,6 +1,6 @@
 ---
-#- name: get centos image
-#  include: get_centos_image.yml
+- name: get centos image
+  include: get_centos_image.yml
 
 - name: build and start container vms
   include: build_and_start_container_vms.yml

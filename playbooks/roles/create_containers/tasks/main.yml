@@ -1,0 +1,3 @@
+---
+- name: create contrail config datqbase
+  include: create_config_database.yml
