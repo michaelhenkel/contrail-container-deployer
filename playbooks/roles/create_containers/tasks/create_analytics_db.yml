@@ -12,14 +12,14 @@
           volumes:
            - /etc/hosts:/etc/hosts
         kafka:
-          image: "{{ CONTAINER_REGISTRY }}/contrail-analyticsdb-kafka:{{ CONTRAIL_VERSION }}"
+          image: "{{ CONTAINER_REGISTRY }}/contrail-analyticsdb-kafka:{{ contrail_configuration.CONTRAIL_VERSION }}"
           network_mode: "service:network"
           env_file: /tmp/common.env
           depends_on:
             - network
           restart: on-failure
         #redis-query:
-        #  image: "{{ CONTAINER_REGISTRY }}/contrail-redis-query:{{ CONTRAIL_VERSION }}"
+        #  image: "{{ CONTAINER_REGISTRY }}/contrail-redis-query:{{ contrail_configuration.CONTRAIL_VERSION }}"
         #  env_file: /tmp/common.env
         #  volumes:
         #    - /var/log/docker/contrail:/var/log/contrail

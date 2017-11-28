@@ -9,10 +9,41 @@
     name: python-pip
     state: latest
 
-- name: install docker
+#- name: install docker
+#  yum:
+#    name: docker
+#    state: latest
+
+- name: install policycoreutils-python
   yum:
-    name: docker
+    name: policycoreutils-python
     state: latest
+
+- name: install libtool-ltdl
+  yum:
+    name: libtool-ltdl
+    state: latest
+
+- name: install libseccomp
+  yum:
+    name: libseccomp
+    state: latest
+
+- name: install docker engine selinux
+  yum:
+    name: https://yum.dockerproject.org/repo/main/centos/7/Packages/docker-engine-selinux-1.13.1-1.el7.centos.noarch.rpm
+    state: present
+
+- name: install docker engine
+  yum:
+    name: https://yum.dockerproject.org/repo/main/centos/7/Packages/docker-engine-1.13.1-1.el7.centos.x86_64.rpm
+    state: present
+
+- name: create /etc/docker
+  file:
+    dest: /etc/docker
+    state: directory
+    mode: 0700
 
 - name: set docker registry
   copy:

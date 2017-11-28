@@ -21,18 +21,32 @@
 
 - name: create contrail config datqbase
   include: create_config_database.yml
+  when: hostvars[inventory_hostname].roles.configdb is defined
 
 - name: create contrail config
   include: create_config.yml
+  when: hostvars[inventory_hostname].roles.config is defined
 
 - name: create contrail webui
   include: create_webui.yml
+  when: hostvars[inventory_hostname].roles.webui is defined
 
 - name: create contrail control
   include: create_control.yml
+  when: hostvars[inventory_hostname].roles.control is defined
 
 - name: create contrail analytics database
   include: create_analytics_db.yml
+  when: hostvars[inventory_hostname].roles.analyticsdb is defined
 
 - name: create contrail analytics
   include: create_analytics.yml
+  when: hostvars[inventory_hostname].roles.analytics is defined
+
+- name: create contrail vrouter
+  include: create_vrouter.yml
+  when: hostvars[inventory_hostname].roles.vrouter is defined
+
+- name: create cnm
+  include: create_cnm.yml
+  when: hostvars[inventory_hostname].roles.cnm is defined

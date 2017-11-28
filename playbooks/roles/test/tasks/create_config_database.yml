@@ -9,7 +9,7 @@
           image: docker.io/kubernetes/pause
           network_mode: "host"
         cassandra:
-          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-database-cassandra:{{ CONTRAIL_VERSION }}"
+          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-database-cassandra:{{ contrail_configuration.CONTRAIL_VERSION }}"
           environment:
            - "CONTROLLER_NODES={{ CONTROLLER_NODES }}"
            - "CASSANDRA_SEEDS={{ CASSANDRA_SEEDS }}"
@@ -22,7 +22,7 @@
             - network
           restart: on-failure
         zookeeper:
-          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-database-zookeeper:{{ CONTRAIL_VERSION }}"
+          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-database-zookeeper:{{ contrail_configuration.CONTRAIL_VERSION }}"
           environment:
            - "CONTROLLER_NODES={{ CONTROLLER_NODES }}"
           volumes:
@@ -32,7 +32,7 @@
             - network
           restart: on-failure
         rabbitmq:
-          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-database-rabbitmq:{{ CONTRAIL_VERSION }}"
+          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-database-rabbitmq:{{ contrail_configuration.CONTRAIL_VERSION }}"
           environment:
            - "CONTROLLER_NODES={{ CONTROLLER_NODES }}"
            - RABBITMQ_ERLANG_COOKIE=abcdefg
@@ -41,7 +41,7 @@
             - network
           restart: on-failure
         redis:
-          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-database-redis:{{ CONTRAIL_VERSION }}"
+          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-database-redis:{{ contrail_configuration.CONTRAIL_VERSION }}"
           environment:
            - "CONTROLLER_NODES={{ CONTROLLER_NODES }}"
           network_mode: "service:network"

@@ -1,0 +1,16 @@
+---
+- name: start contrail vrouter
+  docker_service:
+    project_name: contrail-vrouter
+    pull: yes
+    definition:
+      version: '2'
+      services:
+        vrouter-agent:
+          image: "{{ CONTAINER_REGISTRY }}/contrail-agent-vrouter:{{ contrail_configuration.CONTRAIL_VERSION }}"
+          network_mode: host
+          privileged: true
+          env_file: /tmp/common.env
+          volumes:
+            - /var/log/contrail
+          restart: on-failure

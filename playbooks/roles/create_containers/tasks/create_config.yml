@@ -11,8 +11,19 @@
           network_mode: "host"
           volumes:
            - /etc/hosts:/etc/hosts
+        nodemgr:
+          image: "{{ CONTAINER_REGISTRY }}/contrail-nodemgr:{{ contrail_configuration.CONTRAIL_VERSION }}"
+          env_file: /tmp/common.env
+          environment:
+            - NODE_TYPE=contrail-config
+          network_mode: "service:network"
+          volumes:
+            - /var/log/contrail
+          depends_on:
+            - network
+          restart: on-failure
         api:
-          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-config-api:{{ CONTRAIL_VERSION }}"
+          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-config-api:{{ contrail_configuration.CONTRAIL_VERSION }}"
           env_file: /tmp/common.env
           network_mode: "service:network"
           volumes:
@@ -21,7 +32,7 @@
             - network
           restart: on-failure
         svcmonitor:
-          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-config-svcmonitor:{{ CONTRAIL_VERSION }}"
+          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-config-svcmonitor:{{ contrail_configuration.CONTRAIL_VERSION }}"
           network_mode: "service:network"
           env_file: /tmp/common.env
           volumes:
@@ -30,7 +41,7 @@
             - network
           restart: on-failure
         schema:
-          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-config-schema:{{ CONTRAIL_VERSION }}"
+          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-config-schema:{{ contrail_configuration.CONTRAIL_VERSION }}"
           network_mode: "service:network"
           env_file: /tmp/common.env
           volumes:
@@ -39,7 +50,7 @@
             - network
           restart: on-failure
         devicemgr:
-          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-config-devicemgr:{{ CONTRAIL_VERSION }}"
+          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-config-devicemgr:{{ contrail_configuration.CONTRAIL_VERSION }}"
           network_mode: "service:network"
           env_file: /tmp/common.env
           volumes:

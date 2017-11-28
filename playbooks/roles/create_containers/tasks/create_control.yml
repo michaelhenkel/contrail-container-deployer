@@ -11,8 +11,19 @@
           network_mode: "host"
           volumes:
            - /etc/hosts:/etc/hosts
+        nodemgr:
+          image: "{{ CONTAINER_REGISTRY }}/contrail-nodemgr:{{ contrail_configuration.CONTRAIL_VERSION }}"
+          env_file: /tmp/common.env
+          environment:
+            - NODE_TYPE=contrail-control
+          network_mode: "service:network"
+          volumes:
+            - /var/log/contrail
+          depends_on:
+            - network
+          restart: on-failure
         control:
-          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-control-control:{{ CONTRAIL_VERSION }}"
+          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-control-control:{{ contrail_configuration.CONTRAIL_VERSION }}"
           network_mode: "service:network"
           env_file: /tmp/common.env
           volumes:
@@ -21,19 +32,19 @@
             - network
           restart: on-failure
         named:
-          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-control-named:{{ CONTRAIL_VERSION }}"
+          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-control-named:{{ contrail_configuration.CONTRAIL_VERSION }}"
           network_mode: "service:network"
           env_file: /tmp/common.env
+          privileged: true
           volumes:
             - /var/log/contrail
           depends_on:
             - network
           restart: on-failure
         dns:
-          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-control-dns:{{ CONTRAIL_VERSION }}"
+          image: "{{ CONTAINER_REGISTRY }}/contrail-controller-control-dns:{{ contrail_configuration.CONTRAIL_VERSION }}"
           network_mode: "service:network"
           env_file: /tmp/common.env
-          privileged: true
           volumes:
             - /var/log/contrail
           depends_on:

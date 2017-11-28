@@ -1,0 +1,3 @@
+---
+- name: start contrail cnm plugin
+  shell: "docker plugin install --grant-all-permissions {{ CONTAINER_REGISTRY }}/contrail-cnm-plugin:{{ contrail_configuration.CONTRAIL_VERSION }} API_SERVER_IP={{ contrail_configuration.CONTRAIL_VIP }} OS_TENANT_NAME=admin"
