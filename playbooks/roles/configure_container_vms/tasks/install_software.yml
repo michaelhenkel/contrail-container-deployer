@@ -4,46 +4,31 @@
     name: epel-release
     state: latest
 
+- name: install ntpd
+  yum:
+    name: ntp
+    state: latest
+
+- name: set ntp server
+  template:
+    src: ntp.conf.j2
+    dest: /etc/ntp.conf
+
+- name: initial time sync
+  shell: "ntpdate {{ CONTAINER_VM_CONFIG.network.nameserver }}"
+
+- name: start ntp service
+  service: name=ntpd state=running enabled=yes
+
 - name: install pip
   yum:
     name: python-pip
     state: latest
 
-#- name: install docker
-#  yum:
-#    name: docker
-#    state: latest
-
-- name: install policycoreutils-python
+- name: install docker
   yum:
-    name: policycoreutils-python
+    name: docker
     state: latest
-
-- name: install libtool-ltdl
-  yum:
-    name: libtool-ltdl
-    state: latest
-
-- name: install libseccomp
-  yum:
-    name: libseccomp
-    state: latest
-
-- name: install docker engine selinux
-  yum:
-    name: https://yum.dockerproject.org/repo/main/centos/7/Packages/docker-engine-selinux-1.13.1-1.el7.centos.noarch.rpm
-    state: present
-
-- name: install docker engine
-  yum:
-    name: https://yum.dockerproject.org/repo/main/centos/7/Packages/docker-engine-1.13.1-1.el7.centos.x86_64.rpm
-    state: present
-
-- name: create /etc/docker
-  file:
-    dest: /etc/docker
-    state: directory
-    mode: 0700
 
 - name: set docker registry
   copy:
@@ -68,7 +53,7 @@
     name: docker-compose==1.9.0
 
 - name: "Build hosts file"
-  lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ item }} {{ item.replace('.','_') }}" state=present
+  lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ item }} {{ item.replace('.','-') }}" state=present
   with_items: "{{ hostvars[inventory_hostname].groups.container_vms }}"
 
 - name: create log file directory
@@ -76,3 +61,47 @@
    dest: /var/log/docker/contrail
    state: directory
    mode: 0777
+
+- name: create k8s repo
+  yum_repository:
+    name: Kubernetes
+    description: k8s repo
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+    gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+    repo_gpgcheck: yes
+    gpgcheck: yes
+  when: hostvars[inventory_hostname].roles.k8s_master is defined or hostvars[inventory_hostname].roles.k8s_minion is defined
+
+- name: install kubelet-1.7.4-0
+  yum:
+    name: kubelet-1.7.4-0
+    state: latest
+  when: hostvars[inventory_hostname].roles.k8s_master is defined or hostvars[inventory_hostname].roles.k8s_minion is defined
+
+- name: install kubeadm-1.7.4-0
+  yum:
+    name: kubeadm-1.7.4-0
+    state: latest
+  when: hostvars[inventory_hostname].roles.k8s_master is defined or hostvars[inventory_hostname].roles.k8s_minion is defined
+
+- name: install kubectl-1.7.4-0
+  yum:
+    name: kubectl-1.7.4-0
+    state: latest
+  when: hostvars[inventory_hostname].roles.k8s_master is defined or hostvars[inventory_hostname].roles.k8s_minion is defined
+
+- name: set selinux to permissive
+  selinux:
+    policy: targeted
+    state: permissive
+
+- name: sysctl -w net.bridge.bridge-nf-call-iptables=1
+  shell: sysctl -w net.bridge.bridge-nf-call-iptables=1 && echo "net.bridge.bridge-nf-call-iptables=1" >> /etc/sysctl.conf
+  when: hostvars[inventory_hostname].roles.k8s_master is defined or hostvars[inventory_hostname].roles.k8s_minion is defined
+
+- name: sysctl -w net.bridge.bridge-nf-call-ip6tables=1
+  shell: sysctl -w net.bridge.bridge-nf-call-ip6tables=1 && echo "net.bridge.bridge-nf-call-ip6tables=1" >> /etc/sysctl.conf
+  when: hostvars[inventory_hostname].roles.k8s_master is defined or hostvars[inventory_hostname].roles.k8s_minion is defined
+
+- name: flush iptables
+  shell: iptables -F

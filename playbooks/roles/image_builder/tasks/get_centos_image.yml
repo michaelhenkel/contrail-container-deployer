@@ -48,7 +48,3 @@
 - name: set uncompressed image name
   set_fact:
      uncompressed_image_name: "{{ uncompressed_image_file.files[0].path.split('/')[3] }}"
-
-- debug:
-    msg: "{{ uncompressed_image_name }}"
-

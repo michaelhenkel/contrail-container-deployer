@@ -2,6 +2,3 @@
 - name: set master
   set_fact:
     master: "{{ groups['container_vms'][0] }}"
-
-- name: get master
-  include: get_master.yml

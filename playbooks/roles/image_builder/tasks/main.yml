@@ -1,7 +1,9 @@
 ---
 - name: get centos image
   include: get_centos_image.yml
+  when: BUILD_VMS is defined and BUILD_VMS==true
 
 - name: build and start container vms
   include: build_and_start_container_vms.yml
   with_dict: "{{ hostvars[inventory_hostname].container_vms }}"
+  when: BUILD_VMS is defined and BUILD_VMS==true

@@ -12,7 +12,7 @@
 
 - name: set hostname
   set_fact:
-    container_vm_hostname: "{{ item.key.replace('.','_') }}"
+    container_vm_hostname: "{{ item.key.replace('.','-') }}"
 
 - name: get container vm status
   virt:
@@ -20,9 +20,6 @@
     command: status
   register: container_vm_status
   ignore_errors: yes
-
-- debug:
-    msg: "{{ container_vm_status }}"
 
 - name: destroy {{ container_vm_hostname }}
   virt:
@@ -36,9 +33,6 @@
     command: status
   register: container_vm_status
   ignore_errors: yes
-
-- debug:
-    msg: "{{ container_vm_status }}"
 
 - name: undefine {{ container_vm_hostname }}
   virt:

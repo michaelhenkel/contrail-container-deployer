@@ -1,0 +1,3 @@
+---
+- name: join k8s cluster
+  shell: "kubeadm join --token {{ hostvars[master].mastertoken }} {{ master }}:6443"

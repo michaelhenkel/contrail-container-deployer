@@ -1,0 +1,40 @@
+---
+- name: create /var/lib/contrail
+  file:
+    destination: /var/lib/contrail
+    state: directory
+    recurse: yes
+
+- name: create /etc/cni
+  file:
+    destination: /etc/cni
+    state: directory
+    recurse: yes
+
+- name: create /opt/cni/bin
+  file:
+    destination: /opt/cni/bin
+    state: directory
+    recurse: yes
+
+- name: create /var/log/contrail/cni
+  file:
+    destination: /var/log/contrail/cni
+    state: directory
+    recurse: yes
+
+- name: run contrail cni container
+  docker_service:
+    project_name: contrail cni
+    pull: yes
+    definition:
+      version: '2'
+      services:
+        vrouter-cni:
+          image: "{{ CONTAINER_REGISTRY }}/contrail-kubernetes-vrouter-init:{{ contrail_configuration.CONTRAIL_VERSION }}"
+          env_file: /tmp/common.env
+          volumes:
+            - /var/lib/contrail:/var/lib/contrail
+            - /etc/cni:/etc/cni
+            - /opt/cni/bin:/opt/cni/bin
+            - /var/log/contrail/cni:/var/log/contrail/cni

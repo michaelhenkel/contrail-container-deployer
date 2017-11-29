@@ -23,7 +23,9 @@ container_vms:
         webui:
         analytics:
         analyticsdb:
+        k8s_master:
         vrouter:
+        k8s_minion:
     192.168.1.101:
       ansible_ssh_pass: contrail123
       roles:
@@ -33,7 +35,9 @@ container_vms:
         webui:
         analytics:
         analyticsdb:
+        k8s_master:
         vrouter:
+        k8s_minion:
     192.168.1.102:
       ansible_ssh_pass: contrail123
       roles:
@@ -43,5 +47,6 @@ container_vms:
         webui:
         analytics:
         analyticsdb:
+        k8s_master:
         vrouter:
-#        cnm:
+        k8s_minion:
