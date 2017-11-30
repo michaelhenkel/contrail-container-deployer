@@ -1,4 +1,10 @@
 ---
+- name: create /var/log/contrail
+  file:
+    path: /var/log/contrail
+    state: directory
+    recurse: yes
+
 - name: get /tmp/common.env stat
   stat:
     path: /tmp/common.env
@@ -45,15 +51,26 @@
   include: create_analytics.yml
   when: hostvars[inventory_hostname].roles.analytics is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
 
-- name: create contrail kube manager
-  include: create_kube_manager.yml
-  when: hostvars[inventory_hostname].roles.k8s_master is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
-
-- name: create cni
-  include: create_k8s_cni.yml
-  when: hostvars[inventory_hostname].roles.k8s_minion is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
-
 - name: create contrail vrouter
   include: create_vrouter.yml
   when: hostvars[inventory_hostname].roles.vrouter is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
 
+- name: set master
+  include: set_master.yml
+  when: hostvars[inventory_hostname].roles.k8s_master is defined and CONFIGURE_VMS is defined and CONFIGURE_VMS==true
+
+- name: create cni
+  include: create_k8s_cni.yml
+  when: hostvars[inventory_hostname].roles.k8s_master is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
+
+- name: configure k8s master
+  include: configure_k8s_master_node.yml
+  when: hostvars[inventory_hostname].roles.k8s_master is defined and master is defined and inventory_hostname == master and CONFIGURE_VMS is defined and CONFIGURE_VMS==true
+
+- name: join k8s master
+  include: configure_k8s_join_node.yml
+  when: hostvars[inventory_hostname].roles.k8s_master is defined and master is defined and inventory_hostname != master and CONFIGURE_VMS is defined and CONFIGURE_VMS==true
+
+- name: create contrail kube manager
+  include: create_kube_manager.yml
+  when: hostvars[inventory_hostname].roles.k8s_master is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true and hostvars[inventory_hostname].master == inventory_hostname

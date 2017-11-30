@@ -12,5 +12,5 @@
           privileged: true
           env_file: /tmp/common.env
           volumes:
-            - /var/log/contrail
+            - /var/log/contrail:/var/log/contrail
           restart: on-failure

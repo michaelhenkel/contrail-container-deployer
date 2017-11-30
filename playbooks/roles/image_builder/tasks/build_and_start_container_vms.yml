@@ -58,7 +58,7 @@
     /usr/bin/virt-customize  -a /var/lib/libvirt/images/{{ container_vm_hostname }}.qcow2 \
     --run-command 'xfs_growfs /' \
     --root-password password:{{ CONTAINER_VM_ROOT_PWD }} \
-    --hostname {{ container_vm_hostname }}.local \
+    --hostname {{ container_vm_hostname }}.{{ CONTAINER_VM_CONFIG.network.domainsuffix }} \
     --run-command 'sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd_config' \
     --run-command 'sed -i "s/#UseDNS yes/UseDNS no/g" /etc/ssh/sshd_config' \
     --run-command 'systemctl enable sshd' \

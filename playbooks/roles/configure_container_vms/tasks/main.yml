@@ -2,15 +2,3 @@
 - name: install software
   include: install_software.yml
   when: CONFIGURE_VMS is defined and CONFIGURE_VMS==true
-
-- name: set master
-  include: set_master.yml
-  when: hostvars[inventory_hostname].roles.k8s_master is defined
-
-- name: configure k8s master
-  include: configure_k8s_master_node.yml
-  when: hostvars[inventory_hostname].roles.k8s_master is defined and inventory_hostname == master
-
-- name: join k8s master
-  include: configure_k8s_join_node.yml
-  when: hostvars[inventory_hostname].roles.k8s_master is defined and inventory_hostname != master

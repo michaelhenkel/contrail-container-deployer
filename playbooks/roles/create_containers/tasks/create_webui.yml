@@ -16,7 +16,7 @@
           network_mode: "service:network"
           env_file: /tmp/common.env
           volumes:
-            - /var/log/contrail
+            - /var/log/contrail:/var/log/contrail
           depends_on:
             - network
           restart: on-failure
@@ -25,7 +25,7 @@
           network_mode: "service:network"
           env_file: /tmp/common.env
           volumes:
-            - /var/log/contrail
+            - /var/log/contrail:/var/log/contrail
           depends_on:
             - network
           restart: on-failure

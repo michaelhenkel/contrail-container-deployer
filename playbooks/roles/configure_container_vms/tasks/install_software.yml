@@ -15,10 +15,10 @@
     dest: /etc/ntp.conf
 
 - name: initial time sync
-  shell: "ntpdate {{ CONTAINER_VM_CONFIG.network.nameserver }}"
+  shell: "ntpdate {{ CONTAINER_VM_CONFIG.network.ntpserver }}"
 
 - name: start ntp service
-  service: name=ntpd state=running enabled=yes
+  service: name=ntpd state=started enabled=yes
 
 - name: install pip
   yum:
@@ -54,6 +54,10 @@
 
 - name: "Build hosts file"
   lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ item }} {{ item.replace('.','-') }}" state=present
+  with_items: "{{ hostvars[inventory_hostname].groups.container_vms }}"
+
+- name: "Add hosts with domain suffix"
+  lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ item }} {{ item.replace('.','-') }}.{{ CONTAINER_VM_CONFIG.network.domainsuffix }}" state=present
   with_items: "{{ hostvars[inventory_hostname].groups.container_vms }}"
 
 - name: create log file directory
