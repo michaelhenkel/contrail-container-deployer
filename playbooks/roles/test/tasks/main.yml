@@ -7,13 +7,13 @@
     msg: "{{ hostvars[item].ansible_fqdn}}"
   with_items: "{{ groups['container_vms'] }}"
 
-- name: ping 'em all
+- name: ping 'em all (short)
   shell: "ping -c 5 -q {{ hostvars[item].ansible_hostname}}"
-  register: ping_result
+  register: ping_result_short
   with_items: "{{ groups['container_vms'] }}"
 
 - debug:
-    #msg: "{{ ping_result.results[0].stdout_lines[3] }}"
+    #msg: "{{ ping_result_h.results[0].stdout_lines[3] }}"
     #msg: "{{ ping_result.results[0].stdout_lines[3] | regex_findall('\b(?:[0-9]{1,3}%)\b')}}"
     msg: "{{ ping_result.results[0].stdout_lines[3] | regex_findall('[0-9]{1,3}%')| regex_replace('%') |int }}"
 
