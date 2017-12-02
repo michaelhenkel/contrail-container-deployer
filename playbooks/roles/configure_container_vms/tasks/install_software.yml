@@ -53,11 +53,7 @@
     name: docker-compose==1.9.0
 
 - name: "Build hosts file"
-  lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ item }} {{ item.replace('.','-') }}" state=present
-  with_items: "{{ hostvars[inventory_hostname].groups.container_vms }}"
-
-- name: "Add hosts with domain suffix"
-  lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ item }} {{ item.replace('.','-') }}.{{ CONTAINER_VM_CONFIG.network.domainsuffix }}" state=present
+  lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ item }} {{ item.replace('.','-') }}.{{ CONTAINER_VM_CONFIG.network.domainsuffix }} {{ item.replace('.','-') }}" state=present
   with_items: "{{ hostvars[inventory_hostname].groups.container_vms }}"
 
 - name: create log file directory

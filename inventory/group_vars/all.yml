@@ -1,14 +1,11 @@
 ---
-BUILD_VMS: false
-CONFIGURE_VMS: false
+BUILD_VMS: true
+CONFIGURE_VMS: true
 CREATE_CONTAINERS: true
 #CENTOS_DOWNLOAD_URL: http://cloud.centos.org/centos/7/images/
 CENTOS_DOWNLOAD_URL: http://10.87.64.32/
 CENTOS_IMAGE_NAME: CentOS-7-x86_64-GenericCloud-1710.qcow2.xz
-BRIDGE: br1
-PORTGROUP: prov
 CONTAINER_VM_ROOT_PWD: contrail123
-ROOT_SSH_KEY: /root/.ssh/id_rsa.pub
 CONTAINER_REGISTRY: michaelhenkel
 #CONTAINER_REGISTRY: 10.87.64.33:5043
 CONTAINER_VM_CONFIG:
