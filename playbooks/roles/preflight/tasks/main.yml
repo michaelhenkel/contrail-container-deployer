@@ -1,0 +1,7 @@
+---
+#- name: test connectivity
+#  include: connectivity_test.yml
+#  with_items: "{{ groups['container_vms'] }}"
+
+- name: check installed software
+  include: software_check.yml
