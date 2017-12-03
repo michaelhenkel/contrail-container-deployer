@@ -15,7 +15,7 @@
     dest: /etc/ntp.conf
 
 - name: initial time sync
-  shell: "ntpdate {{ CONTAINER_VM_CONFIG.network.ntpserver }}"
+  shell: "ntpdate {{ hostvars[groups['hypervisors'][0]].CONTAINER_VM_CONFIG.network.ntpserver }}"
 
 - name: start ntp service
   service: name=ntpd state=started enabled=yes
@@ -53,7 +53,7 @@
     name: docker-compose==1.9.0
 
 - name: "Build hosts file"
-  lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ item }} {{ item.replace('.','-') }}.{{ CONTAINER_VM_CONFIG.network.domainsuffix }} {{ item.replace('.','-') }}" state=present
+  lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ item }} {{ item.replace('.','-') }}.{{ hostvars[groups['hypervisors'][0]].CONTAINER_VM_CONFIG.network.domainsuffix }} {{ item.replace('.','-') }}" state=present
   with_items: "{{ hostvars[inventory_hostname].groups.container_hosts }}"
 
 - name: create log file directory
