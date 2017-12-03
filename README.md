@@ -29,6 +29,7 @@ CREATE_CONTAINERS: true #will create containers, true/false
 This file defines the hypervisors hosting the container hosts and    
 the container hosts:    
 ```
+vi inventory/hosts
 hypervisors:
   hosts:
     10.87.64.31:         # hypervisor 1 IP address
