@@ -10,9 +10,10 @@ git clone http://github.com/michaelhenkel/contrail-container-deployer
 ### configuration    
 
 The playbook consists of three main plays:    
-- install virtual machines    
+- install virtual machines hosting the containers    
 - configure/install required software on virtual machines    
 - create containers    
+
 All three plays can be enabled/disabled:    
 
 ```
@@ -23,37 +24,46 @@ CONFIGURE_VMS: true #will configure virtual machines, true/false
 CREATE_CONTAINERS: true #will create containers, true/false
 ```
 
-#### VM configuration
+### hosts configuration
 
-The pre-requisites for building the virtual machines are:    
-- kvm    
-- a virsh network to which the VMs can be connected    
-
-The containers VMs must be assigned to a KVM host:    
+This file defines the hypervisors hosting the container hosts and    
+the container hosts:    
 ```
-vi inventory/hosts
 hypervisors:
   hosts:
-    10.87.64.31:        #KVM host1
-      bridge: br1       #virsh network to which the container VMs will be connected to
-      container_vms:    #container VMs assigned to the KVM host
+    10.87.64.31:         # hypervisor 1 IP address
+      bridge: br1        # virsh network the container vms will be connected to
+      container_hosts:   # container host vms to be started on that hypervisor
         192.168.1.100:
     10.87.64.32:
       bridge: br1
-      container_vms:
+      container_hosts:
         192.168.1.101:
     10.87.64.33:
       bridge: br1
-      container_vms:
+      container_hosts:
         192.168.1.102:
+container_hosts:
+  hosts:
+    192.168.1.100:                   # container host
+      ansible_ssh_pass: contrail123  # container host password
+    192.168.1.101:
+      ansible_ssh_pass: contrail123
+    192.168.1.102:
+      ansible_ssh_pass: contrail123
 ```
+
+#### Container VM configuration
+
+The pre-requisites for building the container VMs are:    
+- kvm    
+- a virsh network to which the VMs can be connected    
 
 The container VMs configuration is done in:    
 ```
-vi inventory/group_vars/all.yml
-CENTOS_DOWNLOAD_URL: http://cloud.centos.org/centos/7/images/
-CENTOS_IMAGE_NAME: CentOS-7-x86_64-GenericCloud-1710.qcow2.xz
-CONTAINER_VM_ROOT_PWD: contrail123
+vi inventory/group_vars/hypervisors.yml
+CENTOS_DOWNLOAD_URL: http://cloud.centos.org/centos/7/images/ #Download URL for CentOS image
+CENTOS_IMAGE_NAME: CentOS-7-x86_64-GenericCloud-1710.qcow2.xz #CentOS image name
 CONTAINER_VM_CONFIG:
   root_pwd: contrail123
   vcpu: 4
@@ -73,7 +83,7 @@ CONTAINER_VM_CONFIG:
 The minimal configuration requires the cluster node  ip addresses,    
 the contrail version and docker registry:    
 ```
-inventory/group_vars/container_vms.yml
+vi inventory/group_vars/container_hosts.yml
 CONTAINER_REGISTRY: michaelhenkel
 contrail_configuration:
   CONTRAIL_VERSION: 4.1.0.0-4
@@ -81,43 +91,37 @@ contrail_configuration:
   CLOUD_ORCHESTRATOR: kubernetes
 ```
 
-The role assignment is done here:    
+The role assignment is done in the same file:    
 ```
-container_vms:
-  hosts:
-    192.168.1.100:
-      ansible_ssh_pass: contrail123
-      roles:
-        configdb:
-        config:
-        control:
-        webui:
-        analytics:
-        analyticsdb:
-        k8s_master:
-        vrouter:
-    192.168.1.101:
-      ansible_ssh_pass: contrail123
-      roles:
-        configdb:
-        config:
-        control:
-        webui:
-        analytics:
-        analyticsdb:
-        k8s_master:
-        vrouter:
-    192.168.1.102:
-      ansible_ssh_pass: contrail123
-      roles:
-        configdb:
-        config:
-        control:
-        webui:
-        analytics:
-        analyticsdb:
-        k8s_master:
-        vrouter:
+vi inventory/group_vars/container_hosts.yml
+roles:
+  192.168.1.100:
+    configdb:
+    config:
+    control:
+    webui:
+    analytics:
+    analyticsdb:
+    k8s_master:
+    vrouter:
+  192.168.1.101:
+    configdb:
+    config:
+    control:
+    webui:
+    analytics:
+    analyticsdb:
+    k8s_master:
+    vrouter:
+  192.168.1.102:
+    configdb:
+    config:
+    control:
+    webui:
+    analytics:
+    analyticsdb:
+    k8s_master:
+    vrouter:
 ```
 ## Execution
 

@@ -29,48 +29,48 @@
 
 - name: create contrail config datqbase
   include: create_config_database.yml
-  when: hostvars[inventory_hostname].roles.configdb is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
+  when: roles[inventory_hostname].configdb is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
 
 - name: create contrail config
   include: create_config.yml
-  when: hostvars[inventory_hostname].roles.config is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
+  when: roles[inventory_hostname].config is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
 
 - name: create contrail webui
   include: create_webui.yml
-  when: hostvars[inventory_hostname].roles.webui is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
+  when: roles[inventory_hostname].webui is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
 
 - name: create contrail control
   include: create_control.yml
-  when: hostvars[inventory_hostname].roles.control is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
+  when: roles[inventory_hostname].control is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
 
 - name: create contrail analytics database
   include: create_analytics_db.yml
-  when: hostvars[inventory_hostname].roles.analyticsdb is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
+  when: roles[inventory_hostname].analyticsdb is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
 
 - name: create contrail analytics
   include: create_analytics.yml
-  when: hostvars[inventory_hostname].roles.analytics is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
+  when: roles[inventory_hostname].analytics is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
 
 - name: create contrail vrouter
   include: create_vrouter.yml
-  when: hostvars[inventory_hostname].roles.vrouter is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
+  when: roles[inventory_hostname].vrouter is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
 
 - name: set master
   include: set_master.yml
-  when: hostvars[inventory_hostname].roles.k8s_master is defined and CONFIGURE_VMS is defined and CONFIGURE_VMS==true
+  when: roles[inventory_hostname].k8s_master is defined and CONFIGURE_VMS is defined and CONFIGURE_VMS==true
 
 - name: create cni
   include: create_k8s_cni.yml
-  when: hostvars[inventory_hostname].roles.k8s_master is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
+  when: roles[inventory_hostname].k8s_master is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
 
 - name: configure k8s master
   include: configure_k8s_master_node.yml
-  when: hostvars[inventory_hostname].roles.k8s_master is defined and master is defined and inventory_hostname == master and CONFIGURE_VMS is defined and CONFIGURE_VMS==true
+  when: roles[inventory_hostname].k8s_master is defined and master is defined and inventory_hostname == master and CONFIGURE_VMS is defined and CONFIGURE_VMS==true
 
 - name: join k8s master
   include: configure_k8s_join_node.yml
-  when: hostvars[inventory_hostname].roles.k8s_master is defined and master is defined and inventory_hostname != master and CONFIGURE_VMS is defined and CONFIGURE_VMS==true
+  when: roles[inventory_hostname].k8s_master is defined and master is defined and inventory_hostname != master and CONFIGURE_VMS is defined and CONFIGURE_VMS==true
 
 - name: create contrail kube manager
   include: create_kube_manager.yml
-  when: hostvars[inventory_hostname].roles.k8s_master is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true and hostvars[inventory_hostname].master == inventory_hostname
+  when: roles[inventory_hostname].k8s_master is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true and hostvars[inventory_hostname].master == inventory_hostname

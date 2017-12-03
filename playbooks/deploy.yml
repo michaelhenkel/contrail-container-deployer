@@ -5,16 +5,11 @@
   - image_builder
 
 - hosts:
-  - container_vms
+  - container_hosts
   roles:
-  - configure_container_vms
+  - configure_container_hosts
 
 - hosts:
-  - container_vms
+  - container_hosts
   roles:
   - create_containers
-
-#- hosts:
-#  - container_vms
-#  roles:
-#  - test

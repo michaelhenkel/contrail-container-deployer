@@ -57,7 +57,7 @@
   shell: | 
     /usr/bin/virt-customize  -a /var/lib/libvirt/images/{{ container_vm_hostname }}.qcow2 \
     --run-command 'xfs_growfs /' \
-    --root-password password:{{ CONTAINER_VM_ROOT_PWD }} \
+    --root-password password:{{ CONTAINER_VM_CONFIG.root_pwd }} \
     --hostname {{ container_vm_hostname }}.{{ CONTAINER_VM_CONFIG.network.domainsuffix }} \
     --run-command 'sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd_config' \
     --run-command 'sed -i "s/#UseDNS yes/UseDNS no/g" /etc/ssh/sshd_config' \
@@ -103,7 +103,7 @@
 - name: add container vm {{ container_vm_hostname }} to inventory
   add_host:
     name: "{{ item.key }}"
-    groups: container_vms
+    groups: container_hosts
     ansible_ssh_pass: "{{ CONTAINER_VM_CONFIG.root_pwd }}"
 
 - name: Wait for the VM be available

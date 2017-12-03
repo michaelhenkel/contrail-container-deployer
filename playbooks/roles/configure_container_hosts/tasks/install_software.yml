@@ -54,7 +54,7 @@
 
 - name: "Build hosts file"
   lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ item }} {{ item.replace('.','-') }}.{{ CONTAINER_VM_CONFIG.network.domainsuffix }} {{ item.replace('.','-') }}" state=present
-  with_items: "{{ hostvars[inventory_hostname].groups.container_vms }}"
+  with_items: "{{ hostvars[inventory_hostname].groups.container_hosts }}"
 
 - name: create log file directory
   file:
@@ -70,25 +70,25 @@
     gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
     repo_gpgcheck: yes
     gpgcheck: yes
-  when: hostvars[inventory_hostname].roles.k8s_master is defined or hostvars[inventory_hostname].roles.k8s_minion is defined
+  when: roles[inventory_hostname].k8s_master is defined or roles[inventory_hostname].k8s_minion is defined
 
 - name: install kubelet-1.7.4-0
   yum:
     name: kubelet-1.7.4-0
     state: latest
-  when: hostvars[inventory_hostname].roles.k8s_master is defined or hostvars[inventory_hostname].roles.k8s_minion is defined
+  when: roles[inventory_hostname].k8s_master is defined or roles[inventory_hostname].k8s_minion is defined
 
 - name: install kubeadm-1.7.4-0
   yum:
     name: kubeadm-1.7.4-0
     state: latest
-  when: hostvars[inventory_hostname].roles.k8s_master is defined or hostvars[inventory_hostname].roles.k8s_minion is defined
+  when: roles[inventory_hostname].k8s_master is defined or roles[inventory_hostname].k8s_minion is defined
 
 - name: install kubectl-1.7.4-0
   yum:
     name: kubectl-1.7.4-0
     state: latest
-  when: hostvars[inventory_hostname].roles.k8s_master is defined or hostvars[inventory_hostname].roles.k8s_minion is defined
+  when: roles[inventory_hostname].k8s_master is defined or roles[inventory_hostname].k8s_minion is defined
 
 - name: set selinux to permissive
   selinux:
@@ -97,11 +97,11 @@
 
 - name: sysctl -w net.bridge.bridge-nf-call-iptables=1
   shell: sysctl -w net.bridge.bridge-nf-call-iptables=1 && echo "net.bridge.bridge-nf-call-iptables=1" >> /etc/sysctl.conf
-  when: hostvars[inventory_hostname].roles.k8s_master is defined or hostvars[inventory_hostname].roles.k8s_minion is defined
+  when: roles[inventory_hostname].k8s_master is defined or roles[inventory_hostname].k8s_minion is defined
 
 - name: sysctl -w net.bridge.bridge-nf-call-ip6tables=1
   shell: sysctl -w net.bridge.bridge-nf-call-ip6tables=1 && echo "net.bridge.bridge-nf-call-ip6tables=1" >> /etc/sysctl.conf
-  when: hostvars[inventory_hostname].roles.k8s_master is defined or hostvars[inventory_hostname].roles.k8s_minion is defined
+  when: roles[inventory_hostname].k8s_master is defined or roles[inventory_hostname].k8s_minion is defined
 
 - name: flush iptables
   shell: iptables -F
