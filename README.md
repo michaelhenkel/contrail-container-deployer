@@ -10,11 +10,11 @@ git clone http://github.com/michaelhenkel/contrail-container-deployer
 ### configuration    
 
 The playbook consists of three main plays:    
-- install virtual machines hosting the containers    
+- install virtual machines (container hosts) hosting the containers    
 - configure/install required software on virtual machines    
 - create containers    
 
-All three plays can be enabled/disabled:    
+All three plays can be enabled/disabled and run individually:    
 
 ```
 vi inventory/group_vars/all.yml
@@ -24,10 +24,24 @@ CONFIGURE_VMS: true #will configure virtual machines, true/false
 CREATE_CONTAINERS: true #will create containers, true/false
 ```
 
-### hosts configuration
+### Prerequisites
+
+The container hosts have to have:    
+- working name resolution through either DNS or host file    
+- docker engine (1.12.6) and docker-compose installed   
+- in case of HA, the time must be in sync    
+
+The first version only supports CentOS 7.4 for the container host    
+creation and configuration.    
+
+The playbooks/roles/configure_container_hosts play takes care if    
+required.    
+
+### hosts configuration (inventory/hosts)
 
 This file defines the hypervisors hosting the container hosts and    
-the container hosts:    
+the container hosts. The hypervisors section is only required in case    
+the container host VMs will be built:    
 ```
 vi inventory/hosts
 hypervisors:

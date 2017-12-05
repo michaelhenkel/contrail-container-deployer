@@ -16,6 +16,7 @@
 
 - name: initial time sync
   shell: "ntpdate {{ hostvars[groups['hypervisors'][0]].CONTAINER_VM_CONFIG.network.ntpserver }}"
+  ignore_errors: yes
 
 - name: start ntp service
   service: name=ntpd state=started enabled=yes

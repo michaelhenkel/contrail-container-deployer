@@ -20,6 +20,27 @@
           restart: on-failure
           volumes:
             - /var/log/contrail:/var/log/contrail
+        cassandra:
+          image: "{{ CONTAINER_REGISTRY }}/contrail-analyticsdb-cassandra:{{ contrail_configuration.CONTRAIL_VERSION }}"
+          env_file: /tmp/common.env
+          environment:
+           - CASSANDRA_START_RPC=true
+           - CASSANDRA_CLUSTER_NAME=contrail_database
+          volumes:
+           - /var/lib/cassandra/data
+          network_mode: "service:network"
+          depends_on:
+            - network
+          restart: on-failure
+        zookeeper:
+          image: "{{ CONTAINER_REGISTRY }}/contrail-analyticsdb-zookeeper:{{ contrail_configuration.CONTRAIL_VERSION }}"
+          env_file: /tmp/common.env
+          volumes:
+           - /data
+          network_mode: "service:network"
+          depends_on:
+            - network
+          restart: on-failure
         #redis-query:
         #  image: "{{ CONTAINER_REGISTRY }}/contrail-redis-query:{{ contrail_configuration.CONTRAIL_VERSION }}"
         #  env_file: /tmp/common.env

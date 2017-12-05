@@ -19,6 +19,7 @@
           network_mode: "service:network"
           volumes:
             - /var/log/contrail:/var/log/contrail
+            - /var/run:/mnt
           depends_on:
             - network
           restart: on-failure
