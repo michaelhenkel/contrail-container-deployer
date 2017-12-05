@@ -1,5 +1,5 @@
 ---
 - hosts:
-  - container_hosts
+  - hypervisors
   roles:
   - test

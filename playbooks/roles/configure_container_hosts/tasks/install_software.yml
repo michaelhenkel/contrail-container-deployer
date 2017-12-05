@@ -52,9 +52,9 @@
   pip:
     name: docker-compose==1.9.0
 
-- name: "Build hosts file"
-  lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ item }} {{ item.replace('.','-') }}.{{ hostvars[groups['hypervisors'][0]].CONTAINER_VM_CONFIG.network.domainsuffix }} {{ item.replace('.','-') }}" state=present
-  with_items: "{{ hostvars[inventory_hostname].groups.container_hosts }}"
+#- name: "Build hosts file"
+#  lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ item }} {{ item.replace('.','-') }}.{{ hostvars[groups['hypervisors'][0]].CONTAINER_VM_CONFIG.network.domainsuffix }} {{ item.replace('.','-') }}" state=present
+#  with_items: "{{ hostvars[inventory_hostname].groups.container_hosts }}"
 
 - name: create log file directory
   file:

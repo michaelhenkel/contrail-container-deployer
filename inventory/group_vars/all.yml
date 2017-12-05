@@ -1,4 +1,4 @@
 ---
-BUILD_VMS: true
-CONFIGURE_VMS: true
+BUILD_VMS: false
+CONFIGURE_VMS: false
 CREATE_CONTAINERS: true

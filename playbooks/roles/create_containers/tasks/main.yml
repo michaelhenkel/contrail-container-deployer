@@ -57,7 +57,7 @@
 
 - name: set master
   include: set_master.yml
-  when: roles[inventory_hostname].k8s_master is defined and CONFIGURE_VMS is defined and CONFIGURE_VMS==true
+  when: roles[inventory_hostname].k8s_master is defined and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
 
 - name: create cni
   include: create_k8s_cni.yml
@@ -65,11 +65,11 @@
 
 - name: configure k8s master
   include: configure_k8s_master_node.yml
-  when: roles[inventory_hostname].k8s_master is defined and master is defined and inventory_hostname == master and CONFIGURE_VMS is defined and CONFIGURE_VMS==true
+  when: roles[inventory_hostname].k8s_master is defined and master is defined and inventory_hostname == master and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
 
 - name: join k8s master
   include: configure_k8s_join_node.yml
-  when: roles[inventory_hostname].k8s_master is defined and master is defined and inventory_hostname != master and CONFIGURE_VMS is defined and CONFIGURE_VMS==true
+  when: roles[inventory_hostname].k8s_master is defined and master is defined and inventory_hostname != master and CREATE_CONTAINERS is defined and CREATE_CONTAINERS==true
 
 - name: create contrail kube manager
   include: create_kube_manager.yml
